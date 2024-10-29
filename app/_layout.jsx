@@ -12,6 +12,8 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider } from "@/contexts/authContext";
 import App from "./App";
 import '../global.css'
+import 'expo-dev-client';
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
