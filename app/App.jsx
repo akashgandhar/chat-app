@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/authContext';
 
 export default function App() {
 
@@ -20,7 +20,7 @@ export default function App() {
 
   return (
     <View>
-      <Text>Home</Text>
+      <Text className='text-red-500'>fffffff</Text>
     </View>
   )
 }
