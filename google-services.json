@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "854289385937",
+    "project_id": "chat-app-778ba",
+    "storage_bucket": "chat-app-778ba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854289385937:android:b4652dfeae0265b4c438f0",
+        "android_client_info": {
+          "package_name": "com.akashgandhar60.chatapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKv4jSHBhjhsPdDhfeqin2nlwCBZYnV-8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

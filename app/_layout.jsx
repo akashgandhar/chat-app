@@ -9,10 +9,12 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AuthProvider } from "@/contexts/authContext";
-import App from "./App";
 import '../global.css'
 import 'expo-dev-client';
+import Login from "./login";
+import { AuthProvider } from "@/contexts/AuthContext";
+
+
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -37,7 +39,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <App/>
+        <Login />       
       </AuthProvider>
     </ThemeProvider>
   );
