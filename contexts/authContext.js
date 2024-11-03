@@ -27,15 +27,10 @@ export const AuthProvider = ({ children }) => {
     console.log("signInWithPhoneNumber", phoneNumber);
     setIsLoading(true);
 
-    const confirmation = await auth()
-      .signInWithPhoneNumber(`+91${phoneNumber}`)
-      .catch((error) => {
-        console.log("error", error);
-        setError(error);
-      })
-      .then(() => {
-        console.log("success");
-      });
+    const confirmation = await auth().signInWithPhoneNumber(
+      `+91${phoneNumber}`
+    );
+
     console.log("confirmation", confirmation);
     setIsLoading(false);
     setConfirm(confirmation);
@@ -65,6 +60,8 @@ export const AuthProvider = ({ children }) => {
   }
 
   const SignOut = () => {
+    console.log("SignOut");
+
     auth()
       .signOut()
       .then(() => {
@@ -72,7 +69,6 @@ export const AuthProvider = ({ children }) => {
         setCode("");
         setConfirm(null);
         setPhoneNumber("");
-        
       });
   };
 

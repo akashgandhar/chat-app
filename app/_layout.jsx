@@ -9,13 +9,11 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import '../global.css'
-import 'expo-dev-client';
+import "../global.css";
+import "expo-dev-client";
 import Login from "./login";
 import { AuthProvider } from "@/contexts/AuthContext";
-
-
-
+import ContactsProvider from "@/contexts/ContactsContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -39,7 +37,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <Login />       
+        <ContactsProvider>
+          <Login />
+        </ContactsProvider>
       </AuthProvider>
     </ThemeProvider>
   );

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Stack } from "expo-router";
 
 export default function Login() {
   const {
@@ -125,12 +126,9 @@ export default function Login() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome {user.phoneNumber}</Text>
-      <TouchableOpacity style={styles.button} onPress={SignOut}>
-        <Text style={{ color: "white", fontWeight: "bold" }}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
   );
 }
 
