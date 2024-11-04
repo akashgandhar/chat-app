@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 export default function Tab() {
   const [searchText, setSearchText] = useState("");
 
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.container}>
