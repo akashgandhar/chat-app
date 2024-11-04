@@ -33,7 +33,8 @@
       "expo-router",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
-      "expo-contacts"
+      "expo-contacts",
+      "expo-image-picker"
     ],
     "experiments": {
       "typedRoutes": true
