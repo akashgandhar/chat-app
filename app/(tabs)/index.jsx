@@ -1,10 +1,111 @@
-import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useContacts } from "@/contexts/ContactsContext";
+import { firebase } from "@react-native-firebase/firestore";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native";
+import ActionSheet from "react-native-actions-sheet";
+import { Link } from "expo-router";
 
 export default function Tab() {
   const [searchText, setSearchText] = useState("");
+  const { contacts } = useContacts();
+  const { user } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState({});
 
-  
+  const filteredContacts = contacts.filter((contact) => {
+    return (
+      contact?.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      contact?.phoneNumbers.includes(searchText)
+    );
+  });
+
+  const actionSheetRef = useRef(null);
+
+  const [u1Chats, setU1Chats] = useState([]);
+  const [u2Chats, setU2Chats] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection(`chats`)
+      .where(
+        "u1",
+        "==",
+        user.phoneNumber?.replace("+91", "").replace(" ", "") ?? "1"
+      )
+      .onSnapshot((snapshot) => {
+        const newData = [];
+        snapshot.forEach((doc) => {
+          newData.push({ ...doc.data(), id: doc.id });
+        });
+        setU1Chats(newData);
+      });
+
+    return () => unsubscribe();
+  }, [user.phoneNumber, user]);
+
+  useEffect(() => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection(`chats`)
+      .where(
+        "u2",
+        "==",
+        user.phoneNumber?.replace("+91", "").replace(" ", "") ?? "1"
+      )
+      .onSnapshot((snapshot) => {
+        const newData = [];
+        snapshot.forEach((doc) => {
+          newData.push({ ...doc.data(), id: doc.id });
+        });
+        setU2Chats(newData);
+      });
+
+    return () => unsubscribe();
+  }, [user.phoneNumber, user]);
+
+  function filterChats(chats, userPhoneNumber) {
+    const filteredChats = [];
+    const uniquePhoneNumbers = new Set();
+
+    chats.forEach((chat) => {
+      if (chat.u1 === userPhoneNumber || chat.u2 === userPhoneNumber) {
+        if (
+          !uniquePhoneNumbers.has(chat.u1) &&
+          !uniquePhoneNumbers.has(chat.u2)
+        ) {
+          filteredChats.push(chat);
+          uniquePhoneNumbers.add(chat.u1);
+          uniquePhoneNumbers.add(chat.u2);
+        }
+      }
+    });
+
+    return filteredChats;
+  }
+
+  const filtChats = [...u1Chats, ...u2Chats].filter((chat) => {
+    return chat?.u1?.includes(searchText) || chat?.u2?.includes(searchText);
+  });
+
+  const filteredChats = filterChats(
+    filtChats,
+    user.phoneNumber?.replace("+91", "").replace(" ", "") ?? "1"
+  );
+
+  console.log(contacts);
+
+  function findOtherContact(contacts, userPhoneNumber, u1, u2) {
+    for (const contact of contacts) {
+      if (contact?.phoneNumbers === u1 || contact?.phoneNumbers === u2) {
+        const otherPhoneNumber = contact?.phoneNumbers === u1 ? u2 : u1;
+        return contacts.find((c) => c?.phoneNumbers === otherPhoneNumber);
+      }
+    }
+    return null; // No match found
+  }
 
   return (
     <View style={styles.container}>
@@ -17,6 +118,126 @@ export default function Tab() {
           // onSubmitEditing={props.onSubmit}
         />
       </View>
+      <FlatList
+        data={filteredChats.sort(function (x, y) {
+          return new Date(y.createdAt) - new Date(x.createdAt);
+        })}
+        renderItem={({ item, index }) => (
+          // card layout with touchble opacity
+          // <Link
+          //   style={{
+          //     backgroundColor: "#f3b61f",
+          //     margin: 10,
+          //     borderRadius: 10,
+          //   }}
+          //   href={`/chat/${item.phoneNumbers}`}
+          // >
+          <TouchableOpacity
+            onPress={() => {
+              actionSheetRef.current?.show();
+              setModalData({
+                phoneNumbers:
+                  item.u1 ===
+                  user.phoneNumber.replace("+91", "").replace(" ", "")
+                    ? item.u2
+                    : item.u1,
+              });
+            }}
+            key={index}
+            style={{
+              backgroundColor: "#f3b61f",
+              padding: 18,
+              margin: 10,
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+              {/* {findOtherContact(
+                contacts,
+                user.phoneNumber,
+                item.u1,
+                item.u2
+              ) === null ||
+              !item.u1 ||
+              !item.u2
+                ? "Unknown"
+                : findOtherContact(contacts, user.phoneNumber, item.u1, item.u2)
+                    ?.name} */}
+
+              {item.u1 === user.phoneNumber.replace("+91", "").replace(" ", "")
+                ? contacts.find((contact) => contact?.phoneNumbers === item.u2)
+                    ?.name ?? item.u2
+                : contacts.find((contact) => contact?.phoneNumbers === item.u1)
+                    ?.name ?? item.u1}
+            </Text>
+            <Text style={{ fontSize: 16 }}>
+              {item.u1 === user.phoneNumber.replace("+91", "").replace(" ", "")
+                ? item.u2
+                : item.u1}
+            </Text>
+          </TouchableOpacity>
+          // </Link>
+        )}
+        keyExtractor={(item) => item.title}
+      />
+
+      {/* Modal  */}
+      <ActionSheet ref={actionSheetRef}>
+        <Link
+          style={{
+            backgroundColor: "#f3b61f",
+            margin: 10,
+            borderRadius: 10,
+          }}
+          href={`/chat/${user?.phoneNumber
+            ?.replace("+91", "")
+            ?.replace(" ", "")}-p-${modalData?.phoneNumbers
+            ?.replace("+91", "")
+            ?.replace(" ", "")}`}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              actionSheetRef.current?.show();
+            }}
+            style={{
+              backgroundColor: "#f3b61f",
+              padding: 10,
+              margin: 10,
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Personel</Text>
+            <Text style={{ fontSize: 16 }}>{modalData?.phoneNumbers}</Text>
+          </TouchableOpacity>
+        </Link>
+        <Link
+          style={{
+            backgroundColor: "#f3b61f",
+            margin: 10,
+            borderRadius: 10,
+          }}
+          href={`/chat/${user?.phoneNumber
+            ?.replace("+91", "")
+            ?.replace(" ", "")}-b-${modalData?.phoneNumbers
+            ?.replace("+91", "")
+            ?.replace(" ", "")}`}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              actionSheetRef.current?.show();
+            }}
+            style={{
+              backgroundColor: "#f3b61f",
+              padding: 10,
+              margin: 10,
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Bussiness</Text>
+            <Text style={{ fontSize: 16 }}>{modalData?.phoneNumbers}</Text>
+          </TouchableOpacity>
+        </Link>
+      </ActionSheet>
     </View>
   );
 }
