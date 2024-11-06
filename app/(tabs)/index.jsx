@@ -6,6 +6,14 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 import { FlatList, TouchableOpacity } from "react-native";
 import ActionSheet from "react-native-actions-sheet";
 import { Link } from "expo-router";
+import { MenuProvider } from "react-native-popup-menu";
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import Entypo from "@expo/vector-icons/Entypo";
 
 export default function Tab() {
   const [searchText, setSearchText] = useState("");
@@ -97,148 +105,210 @@ export default function Tab() {
 
   console.log(contacts);
 
-  function findOtherContact(contacts, userPhoneNumber, u1, u2) {
-    for (const contact of contacts) {
-      if (contact?.phoneNumbers === u1 || contact?.phoneNumbers === u2) {
-        const otherPhoneNumber = contact?.phoneNumbers === u1 ? u2 : u1;
-        return contacts.find((c) => c?.phoneNumbers === otherPhoneNumber);
-      }
-    }
-    return null; // No match found
-  }
+  const [idMenu, setIdMenu] = useState("");
+  const [options, setOptions] = useState([]);
+
+  const handleOnPress = (id) => {
+    setIdMenu(id);
+    setOptions([
+      {
+        onPress: () => {
+          console.log("Delete");
+        },
+        text: "Delete",
+      },
+    ]);
+  };
 
   return (
-    <View style={styles.container}>
+    <MenuProvider>
       <View style={styles.container}>
-        <TextInput
-          value={searchText}
-          placeholder="Search"
-          style={styles.input}
-          onChangeText={(text) => setSearchText(text)}
-          // onSubmitEditing={props.onSubmit}
-        />
-      </View>
-      <FlatList
-        data={filteredChats.sort(function (x, y) {
-          return new Date(y.createdAt) - new Date(x.createdAt);
-        })}
-        renderItem={({ item, index }) => (
-          // card layout with touchble opacity
-          // <Link
-          //   style={{
-          //     backgroundColor: "#f3b61f",
-          //     margin: 10,
-          //     borderRadius: 10,
-          //   }}
-          //   href={`/chat/${item.phoneNumbers}`}
-          // >
-          <TouchableOpacity
-            onPress={() => {
-              actionSheetRef.current?.show();
-              setModalData({
-                phoneNumbers:
-                  item.u1 ===
+        <View style={styles.container}>
+          <TextInput
+            value={searchText}
+            placeholder="Search"
+            style={styles.input}
+            onChangeText={(text) => setSearchText(text)}
+            // onSubmitEditing={props.onSubmit}
+          />
+        </View>
+
+        <FlatList
+          data={filteredChats.sort(function (x, y) {
+            return new Date(y.createdAt) - new Date(x.createdAt);
+          })}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              key={index}
+              style={{
+                backgroundColor: "#f3b61f",
+                padding: 18,
+                margin: 10,
+                borderRadius: 10,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                }}
+                onPress={() => {
+                  actionSheetRef.current?.show();
+                  setModalData({
+                    phoneNumbers:
+                      item.u1 ===
+                      user.phoneNumber.replace("+91", "").replace(" ", "")
+                        ? item.u2
+                        : item.u1,
+                  });
+                }}
+              >
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                  {item.u1 ===
+                  user.phoneNumber.replace("+91", "").replace(" ", "")
+                    ? contacts.find(
+                        (contact) => contact?.phoneNumbers === item.u2
+                      )?.name ?? item.u2
+                    : contacts.find(
+                        (contact) => contact?.phoneNumbers === item.u1
+                      )?.name ?? item.u1}
+                </Text>
+                <Text style={{ fontSize: 16 }}>
+                  {item.u1 ===
                   user.phoneNumber.replace("+91", "").replace(" ", "")
                     ? item.u2
-                    : item.u1,
-              });
-            }}
-            key={index}
-            style={{
-              backgroundColor: "#f3b61f",
-              padding: 18,
-              margin: 10,
-              borderRadius: 10,
-            }}
-          >
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-              {/* {findOtherContact(
-                contacts,
-                user.phoneNumber,
-                item.u1,
-                item.u2
-              ) === null ||
-              !item.u1 ||
-              !item.u2
-                ? "Unknown"
-                : findOtherContact(contacts, user.phoneNumber, item.u1, item.u2)
-                    ?.name} */}
+                    : item.u1}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  top: 10,
+                  position: "absolute",
+                  right: 10,
+                }}
+              >
+                <Menu onClose={() => setIdMenu("")}>
+                  <MenuTrigger
+                    onPress={() => handleOnPress(1)}
+                    customStyles={{
+                      triggerWrapper: {
+                        top: 25,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flex: 1,
+                      },
+                      triggerTouchable: {
+                        underlayColor: "white",
+                      },
+                    }}
+                  >
+                    <Entypo
+                      name="dots-three-horizontal"
+                      size={24}
+                      color="black"
+                    />
+                  </MenuTrigger>
 
-              {item.u1 === user.phoneNumber.replace("+91", "").replace(" ", "")
-                ? contacts.find((contact) => contact?.phoneNumbers === item.u2)
-                    ?.name ?? item.u2
-                : contacts.find((contact) => contact?.phoneNumbers === item.u1)
-                    ?.name ?? item.u1}
-            </Text>
-            <Text style={{ fontSize: 16 }}>
-              {item.u1 === user.phoneNumber.replace("+91", "").replace(" ", "")
-                ? item.u2
-                : item.u1}
-            </Text>
-          </TouchableOpacity>
-          // </Link>
-        )}
-        keyExtractor={(item) => item.title}
-      />
+                  <MenuOptions
+                    customStyles={{
+                      optionsWrapper: {
+                        position: "absolute",
+                        bottom: -50,
+                        left: 50,
+                        height: 45,
+                        backgroundColor: "white",
+                        borderRadius: 8,
+                        padding: 8,
+                        width: 150,
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 4,
+                        elevation: 5,
+                      },
+                    }}
+                  >
+                    <>
+                      <MenuOption
+                        // onSelect={option.onPress}
+                        text="Add to Group"
+                      />
+                      
 
-      {/* Modal  */}
-      <ActionSheet ref={actionSheetRef}>
-        <Link
-          style={{
-            backgroundColor: "#f3b61f",
-            margin: 10,
-            borderRadius: 10,
-          }}
-          href={`/chat/${user?.phoneNumber
-            ?.replace("+91", "")
-            ?.replace(" ", "")}-p-${modalData?.phoneNumbers
-            ?.replace("+91", "")
-            ?.replace(" ", "")}`}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              actionSheetRef.current?.show();
-            }}
+                      
+                    </>
+                  </MenuOptions>
+                </Menu>
+              </TouchableOpacity>
+            </TouchableOpacity>
+            // </Link>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+
+        {/* Modal  */}
+        <ActionSheet ref={actionSheetRef}>
+          <Link
             style={{
               backgroundColor: "#f3b61f",
-              padding: 10,
               margin: 10,
               borderRadius: 10,
             }}
+            href={`/chat/${user?.phoneNumber
+              ?.replace("+91", "")
+              ?.replace(" ", "")}-p-${modalData?.phoneNumbers
+              ?.replace("+91", "")
+              ?.replace(" ", "")}`}
           >
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Personel</Text>
-            <Text style={{ fontSize: 16 }}>{modalData?.phoneNumbers}</Text>
-          </TouchableOpacity>
-        </Link>
-        <Link
-          style={{
-            backgroundColor: "#f3b61f",
-            margin: 10,
-            borderRadius: 10,
-          }}
-          href={`/chat/${user?.phoneNumber
-            ?.replace("+91", "")
-            ?.replace(" ", "")}-b-${modalData?.phoneNumbers
-            ?.replace("+91", "")
-            ?.replace(" ", "")}`}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              actionSheetRef.current?.show();
-            }}
+            <TouchableOpacity
+              onPress={() => {
+                actionSheetRef.current?.show();
+              }}
+              style={{
+                backgroundColor: "#f3b61f",
+                padding: 10,
+                margin: 10,
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>Personel</Text>
+              <Text style={{ fontSize: 16 }}>{modalData?.phoneNumbers}</Text>
+            </TouchableOpacity>
+          </Link>
+          <Link
             style={{
               backgroundColor: "#f3b61f",
-              padding: 10,
               margin: 10,
               borderRadius: 10,
             }}
+            href={`/chat/${user?.phoneNumber
+              ?.replace("+91", "")
+              ?.replace(" ", "")}-b-${modalData?.phoneNumbers
+              ?.replace("+91", "")
+              ?.replace(" ", "")}`}
           >
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Bussiness</Text>
-            <Text style={{ fontSize: 16 }}>{modalData?.phoneNumbers}</Text>
-          </TouchableOpacity>
-        </Link>
-      </ActionSheet>
-    </View>
+            <TouchableOpacity
+              onPress={() => {
+                actionSheetRef.current?.show();
+              }}
+              style={{
+                backgroundColor: "#f3b61f",
+                padding: 10,
+                margin: 10,
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                Bussiness
+              </Text>
+              <Text style={{ fontSize: 16 }}>{modalData?.phoneNumbers}</Text>
+            </TouchableOpacity>
+          </Link>
+        </ActionSheet>
+      </View>
+    </MenuProvider>
   );
 }
 
