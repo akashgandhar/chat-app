@@ -77,7 +77,7 @@ export default function Login() {
                     <Text
                       style={{
                         textDecorationLine: "underline",
-                        color: "#45b6fe",
+                        color: "#f3b61f",
                       }}
                     >
                       Click Here
@@ -146,19 +146,21 @@ const styles = StyleSheet.create({
     // marginBottom: 20,
     textDecorationStyle: "solid",
     fontWeight: "bold",
-    color: "#45b6fe",
+    color: "#f3b61f",
   },
   input: {
     padding: 10,
     borderWidth: 1,
-    borderColor: "#45b6fe",
+    borderColor : "#f3b61f",
     borderRadius: 5,
     width: "100%",
+    color: "#f3b61f",
+    fontWeight: "bold",
   },
   button: {
     padding: 10,
     borderRadius: 5,
-    backgroundColor: "#45b6fe",
+    backgroundColor: "#f3b61f",
     width: "100%",
     alignItems: "center",
   },

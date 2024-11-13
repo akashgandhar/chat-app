@@ -14,6 +14,7 @@ import "expo-dev-client";
 import Login from "./login";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ContactsProvider from "@/contexts/ContactsContext";
+import { MenuProvider } from "react-native-popup-menu";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -36,11 +37,13 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DefaultTheme : DefaultTheme}>
-      <AuthProvider>
-        <ContactsProvider>
-          <Login />
-        </ContactsProvider>
-      </AuthProvider>
+      <MenuProvider>
+        <AuthProvider>
+          <ContactsProvider>
+            <Login />
+          </ContactsProvider>
+        </AuthProvider>
+      </MenuProvider>
     </ThemeProvider>
   );
 }

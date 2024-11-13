@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import ActionSheet from "react-native-actions-sheet";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function Tab() {
   const [searchText, setSearchText] = useState("");
@@ -30,7 +31,27 @@ export default function Tab() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.container}>
+      <View
+        style={{
+          backgroundColor: "#fff",
+          marginLeft: 10,
+          marginRight: 10,
+          borderRadius: 10,
+        }}
+      >
+        <View
+          style={{
+            position: "absolute",
+            left: 10,
+            top: 10,
+            zIndex: 1,
+            backgroundColor: "#F4F6F8",
+            padding: 7,
+            borderRadius: 10,
+          }}
+        >
+          <AntDesign name="search1" size={16} color="black" />
+        </View>
         <TextInput
           value={searchText}
           placeholder="Search"
@@ -42,15 +63,7 @@ export default function Tab() {
       <FlatList
         data={filteredContacts}
         renderItem={({ item, index }) => (
-          // card layout with touchble opacity
-          // <Link
-          //   style={{
-          //     backgroundColor: "#f3b61f",
-          //     margin: 10,
-          //     borderRadius: 10,
-          //   }}
-          //   href={`/chat/${item.phoneNumbers}`}
-          // >
+          
           <TouchableOpacity
             onPress={() => {
               actionSheetRef.current?.show();
@@ -58,10 +71,15 @@ export default function Tab() {
             }}
             key={index}
             style={{
-              backgroundColor: "#f3b61f",
-              padding: 10,
+              backgroundColor: "#fff",
+              padding: 18,
               margin: 10,
-              borderRadius: 10,
+              marginBottom: 0,
+              borderRadius: 20,
+              display: "flex",
+              justifyContent: "space-between",
+              // alignItems: "center",
+              flexDirection: "column",
             }}
           >
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>
@@ -71,7 +89,7 @@ export default function Tab() {
           </TouchableOpacity>
           // </Link>
         )}
-        keyExtractor={(item) => item.title}
+        keyExtractor={(item, index) => index.toString()}
       />
 
       {/* Modal  */}
@@ -146,7 +164,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 8,
     borderRadius: 10,
-    borderColor: "#f3b61f",
+    borderColor: "#fff",
     borderWidth: 2,
+    marginLeft: 40,
   },
 });
